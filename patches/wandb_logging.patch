@@ -1,0 +1,61 @@
+diff --git a/src/main.py b/src/main.py
+index c1f1547..a780a77 100644
+--- a/src/main.py
++++ b/src/main.py
+@@ -1,6 +1,7 @@
+ import os
+ import torch
+ import numpy as np
++import wandb
+ 
+ from model import MODEL_DICT
+ from trainers import Trainer
+@@ -45,15 +46,27 @@ def main():
+             logger.info(f"Load model from {args.checkpoint_path} for test!")
+             scores, result_info = trainer.test(0)
+             args.checkpoint_path = os.path.join(args.output_dir, args.train_name + '.pt')
+-            # torch.save(trainer.model.state_dict(), args.checkpoint_path)
+ 
+     else:
++        # Mengambil konfigurasi hyperparameter untuk dicatat di W&B dashboard
++        cfg = {k: v for k, v in vars(args).items() if isinstance(v, (int, float, str, bool))}
++        wandb.init(project="bsarec-repro", name=args.train_name, config=cfg)
++
+         early_stopping = EarlyStopping(args.checkpoint_path, logger=logger, patience=args.patience, verbose=True)
+         for epoch in range(args.epochs):
+ 
+             trainer.train(epoch)
+             scores, _ = trainer.valid(epoch)
+-            # evaluate on MRR
++
++            # Log validasi epoch ke W&B
++            wandb.log({
++                "epoch": epoch,
++                "valid/HR@5": scores[0], "valid/NDCG@5": scores[1],
++                "valid/HR@10": scores[2], "valid/NDCG@10": scores[3],
++                "valid/HR@20": scores[4], "valid/NDCG@20": scores[5]
++            })
++
++            # Evaluate on MRR (menggunakan metrik evaluasi terakhir di list scores)
+             early_stopping(np.array(scores[-1:]), trainer.model)
+             if early_stopping.early_stop:
+                 logger.info("Early stopping")
+@@ -63,8 +76,16 @@ def main():
+         trainer.model.load_state_dict(torch.load(args.checkpoint_path))
+         scores, result_info = trainer.test(0)
+ 
++        # Log hasil test final ke W&B
++        wandb.log({
++            "test/HR@5": scores[0], "test/NDCG@5": scores[1],
++            "test/HR@10": scores[2], "test/NDCG@10": scores[3],
++            "test/HR@20": scores[4], "test/NDCG@20": scores[5]
++        })
++        wandb.finish()
++
+     logger.info(args.train_name)
+     logger.info(result_info)
+ 
+-
+-main()
++if __name__ == '__main__':
++    main()

@@ -1,0 +1,24 @@
+# Data berlisensi (Amazon, ML-1M, LastFM): JANGAN di-commit. Unduh sendiri lewat repo upstream.
+src/data/
+data/
+*.npy
+
+# Model dan artefak training (simpan di Google Drive / GitHub Release bila perlu)
+*.pt
+output/
+wandb/
+
+# Python / Colab
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+drive/
+sample_data/
+
+# Rahasia: jangan pernah di-commit
+.env
+*token*
+*api_key*
+
+# Clone repo upstream di dalam folder ini: jangan ikut di-commit
+BSARec/

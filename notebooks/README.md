@@ -1,8 +1,10 @@
 Notebook Colab yang disimpan di sini:
 
-- `BSARec_Reproduce.ipynb`: reproduksi Beauty.
-- `BSARec_LastFM_Final_Strict.ipynb`: preprocessing/audit dan enam run utama LastFM pada konfigurasi 4 worker. Preview output baris mentah dihapus dari salinan publik; kode sumber dan metrik tersimpan dipertahankan.
-- `BSARec_LastFM_WandB_2workers.ipynb`: eksperimen tambahan LastFM 2 worker, W&B, ablasi, dan evaluasi checkpoint penulis. Gunakan sebagai catatan eksperimen tambahan, bukan sumber utama audit protokol. Ada beberapa output troubleshooting dari sesi Colab.
-- `BSARec_dan_SASRec_ML_1M.ipynb`: eksperimen ML-1M seed 42; hasil hanya deskriptif dan konfigurasi worker kedua model berbeda.
+| File | Dataset dan isi | Bukti eksekusi tersimpan |
+| --- | --- | --- |
+| `BSARec_Beauty.ipynb` | Beauty: checkpoint penulis, run utama, dan ablasi | Output log dan metrik ada, tetapi salinan ini tidak memuat output training BSARec seed 44. Sebagian sel juga tidak memiliki nomor eksekusi. |
+| `BSARec_LastFM.ipynb` | LastFM: preprocessing dan enam run utama pada konfigurasi 4 worker | Keenam sel training memiliki nomor eksekusi dan output test. Preview baris dataset mentah dihapus dari output salinan publik. |
+| `BSARec_LastFM_EksperimenTambahan.ipynb` | LastFM: eksperimen 2 worker dengan W&B, ablasi, dan evaluasi checkpoint penulis | Sel run dan tabel ringkasan memiliki output tersimpan; ini eksperimen tambahan, bukan audit utama. |
+| `BSARec_dan_SASRec_ML_1M.ipynb` | MovieLens-1M: satu seed untuk tiap model | Log dan tabel metrik tersimpan, tetapi nomor eksekusi semua sel kosong pada salinan ini. |
 
-Dataset mentah dan checkpoint model tidak di-commit. Sel training pada notebook dapat menjalankan training penuh; hindari “Run all” jika hanya ingin membaca output yang tersimpan. Sebelum menambahkan notebook lain, periksa output sel agar tidak memuat dataset mentah atau credential W&B.
+Jadi, notebook LastFM utama sudah menunjukkan sel training yang benar-benar berjalan. Jika tersedia, tambahkan ekspor Colab Beauty yang mencakup output BSARec seed 44 dan ekspor Colab ML-1M dengan metadata eksekusi; tidak perlu melatih ulang hanya untuk mengganti nama file. Dataset mentah dan checkpoint model tidak di-commit. Sel training dapat menjalankan eksperimen penuh bila dieksekusi ulang; hindari “Run all” hanya untuk membaca output. Sebelum menambahkan notebook, pastikan outputnya tidak memuat dataset mentah atau credential W&B.

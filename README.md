@@ -55,7 +55,12 @@ Notebook ML-1M yang sudah ada berisi hasil seed 42 untuk kedua model. Ringkasan 
 
 ## Presentasi Checkpoint 1
 
-Deck yang disiapkan dari template tersedia di [presentations/CP1/BSARec_CP1_3Datasets.pptx](presentations/CP1/BSARec_CP1_3Datasets.pptx). Notebook Beauty, LastFM, dan ML-1M ditautkan di bagian struktur repositori.
+Deck yang disiapkan dari template tersedia di [presentations/CP1/BSARec_CP1_3Datasets.pptx](presentations/CP1/BSARec_CP1_3Datasets.pptx). Notebook per dataset:
+
+- Beauty: [BSARec_Beauty.ipynb](notebooks/BSARec_Beauty.ipynb)
+- LastFM, hasil utama: [BSARec_LastFM.ipynb](notebooks/BSARec_LastFM.ipynb)
+- LastFM, eksperimen tambahan: [BSARec_LastFM_EksperimenTambahan.ipynb](notebooks/BSARec_LastFM_EksperimenTambahan.ipynb)
+- MovieLens-1M: [BSARec_dan_SASRec_ML_1M.ipynb](notebooks/BSARec_dan_SASRec_ML_1M.ipynb)
 
 ## Struktur repositori
 
@@ -89,7 +94,7 @@ Deck yang disiapkan dari template tersedia di [presentations/CP1/BSARec_CP1_3Dat
 | PyTorch | 2.11.0 (CUDA 13.0) | 1.8.1 (CUDA 11.1) |
 | NumPy / SciPy | 2.1.3 / 1.16.3 | 1.24.3 / 1.11.1 |
 
-Sebagian eksperimen LastFM dicatat di [Weights & Biases project `bsarec-repro`](https://wandb.ai/rusdiasputre-brawijaya-university/bsarec-repro). Notebook audit ketat 4-worker menjadi sumber utama tabel LastFM; notebook W&B 2-worker adalah eksperimen tambahan.
+Sebagian eksperimen LastFM dicatat di [Weights & Biases project `bsarec-repro`](https://wandb.ai/rusdiasputre-brawijaya-university/bsarec-repro). Notebook utama 4-worker menjadi sumber utama tabel LastFM; notebook eksperimen tambahan 2-worker mencatat hasil W&B.
 
 ## Data dan lisensi
 

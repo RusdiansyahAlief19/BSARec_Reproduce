@@ -1,0 +1,7 @@
+metric,mean_delta_BSARec_minus_SASRec,BSARec_wins,ties,SASRec_wins
+HR@5,0.00150,1,2,0
+NDCG@5,-0.00033,1,0,2
+HR@10,0.00797,3,0,0
+NDCG@10,0.00177,2,0,1
+HR@20,0.01743,3,0,0
+NDCG@20,0.00417,3,0,0

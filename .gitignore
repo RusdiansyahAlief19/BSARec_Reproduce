@@ -16,11 +16,21 @@ __pycache__/
 .ipynb_checkpoints/
 drive/
 sample_data/
+.venv/
+venv/
+.pytest_cache/
+*.log
 
 # Rahasia: jangan pernah di-commit
 .env
 *token*
 *api_key*
+
+# File sementara dari editor dan OS
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # Clone repo upstream di dalam folder ini: jangan ikut di-commit
 BSARec/

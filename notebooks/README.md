@@ -1,10 +1,23 @@
-Notebook Colab yang disimpan di sini:
+# Notebook index
 
-| File | Dataset dan isi | Bukti eksekusi tersimpan |
+## CP1 — reproduction
+
+| Notebook | Dataset / purpose | Notes |
 | --- | --- | --- |
-| `BSARec_Beauty.ipynb` | Beauty: checkpoint penulis, run utama, dan ablasi | Output log dan metrik ada, tetapi salinan ini tidak memuat output training BSARec seed 44. Sebagian sel juga tidak memiliki nomor eksekusi. |
-| `BSARec_LastFM.ipynb` | LastFM: preprocessing dan enam run utama pada konfigurasi 4 worker | Keenam sel training memiliki nomor eksekusi dan output test. Preview baris dataset mentah dihapus dari output salinan publik. |
-| `BSARec_LastFM_EksperimenTambahan.ipynb` | LastFM: eksperimen 2 worker dengan W&B, ablasi, dan evaluasi checkpoint penulis | Sel run dan tabel ringkasan memiliki output tersimpan; ini eksperimen tambahan, bukan audit utama. |
-| `BSARec_dan_SASRec_ML_1M.ipynb` | MovieLens-1M: satu seed untuk tiap model | Log dan tabel metrik tersimpan, tetapi nomor eksekusi semua sel kosong pada salinan ini. |
+| `CP1/BSARec_Beauty.ipynb` | Beauty: baseline, author checkpoint evaluation, and ablation | Saved training outputs are retained; some execution counters are absent. |
+| `CP1/BSARec_LastFM.ipynb` | LastFM: strict preprocessing audit and main BSARec/SASRec runs | Dataset previews are omitted from saved outputs. |
+| `CP1/BSARec_LastFM_EksperimenTambahan.ipynb` | LastFM: additional 2-worker/W&B experiment | Descriptive supplement; not the controlled worker experiment. |
+| `CP1/BSARec_dan_SASRec_ML_1M.ipynb` | ML-1M: one seed per model | Treat the result as descriptive. |
 
-Pada ML-1M, tabel ringkasan notebook menyalin NDCG@5 BSARec sebagai 0.1251, tetapi log test run menunjukkan 0.1151; CSV hasil memakai angka log 0.1151. Jadi, notebook LastFM utama sudah menunjukkan sel training yang benar-benar berjalan. Jika tersedia, tambahkan ekspor Colab Beauty yang mencakup output BSARec seed 44 dan ekspor Colab ML-1M dengan metadata eksekusi; tidak perlu melatih ulang hanya untuk mengganti nama file. Dataset mentah dan checkpoint model tidak di-commit. Sel training dapat menjalankan eksperimen penuh bila dieksekusi ulang; hindari “Run all” hanya untuk membaca output. Sebelum menambahkan notebook, pastikan outputnya tidak memuat dataset mentah atau credential W&B.
+## CP2 — time-aware BSARec
+
+| Notebook | Purpose | Notes |
+| --- | --- | --- |
+| `CP2/CP2_Paired_BSARec_Vanilla_vs_Time_Beauty_ML1M_template.ipynb` | Runnable paired comparison | Use this for new runs after reviewing setup and inputs. |
+| `CP2/CP2_Paired_BSARec_Vanilla_vs_Time_Beauty_ML1M_executed.ipynb` | Preserved paired run outputs | Inspection/reporting copy; contains the run outputs associated with `results/CP2/`. |
+| `CP2/CP2_Paired_BSARec_Vanilla_vs_Time_Beauty_ML1M_LabGPU.ipynb` | Lab GPU variant | Separate runtime notebook. |
+| `CP2/CP2_TimeAware_BSARec_Beauty_ML1M.ipynb` | Time-aware training workflow | Earlier workflow. |
+| `CP2/CP2_TimeAware_BSARec_Beauty_ML1M_executed.ipynb` | Saved earlier outputs | Keep distinct from the final paired results. |
+| `CP2/LastFM/` | LastFM preprocessing, audit, and bucket preparation notebooks | LastFM was not included in the paired CP2 training results. |
+
+Raw data and generated time-bucket sequence files are excluded from Git. The executed paired notebook contains a mixture of captured metrics and parsed logs in its final reporting cell; it should be retained with the paired CSVs for auditability.

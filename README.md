@@ -1,109 +1,92 @@
-# BSARec_Reproduce
+# BSARec Reproduction and Time-Aware Extension
 
-Reproduksi paper **"An Attentive Inductive Bias for Sequential Recommendation beyond the Self-Attention"** (BSARec, Shin, Choi, Wi, dan Park, AAAI 2024; [arXiv:2312.10325](https://arxiv.org/abs/2312.10325)) pada Amazon Beauty, LastFM, dan MovieLens-1M, untuk Checkpoint 1 probation Lab KC (Lab Sistem Cerdas), FILKOM, 2026. Tim: Anca dan Renno.
+**Maintainer: Anca — Lab KC, FILKOM.** This repository preserves Anca's experiment notebooks, preprocessing audits, results, reports, and presentation artifacts for Checkpoint 1 and Checkpoint 2. Some historical working folders used a different name; repository ownership and organization follow Anca's project workspace.
 
-Repositori ini **tidak menyalin kode model atau dataset upstream**. Isinya notebook eksperimen, ringkasan hasil CSV, grafik, sebagian log, patch W&B, dan slide Checkpoint 1. Audit LastFM mencatat commit upstream BSARec `c80bdc0f1a889b78fe9a27e2058389cc84caea84`; commit saat training Beauty dan ML-1M tidak dicatat terpisah. Kode upstream: <https://github.com/yehjin-shin/BSARec>.
+This project reproduces selected BSARec/SASRec experiments and evaluates a time-bucket extension to BSARec. It does not redistribute upstream source code, datasets, or model checkpoints.
 
-## Ringkasan hasil (Beauty)
+## Research question
 
-Angka rata-rata 3 seed (42, 43, 44), dibandingkan dengan Table 2 paper. Detail per seed ada di `results/`.
+Does adding categorical time-gap embeddings to BSARec improve next-item recommendation? CP2 compares vanilla BSARec and time-aware BSARec on Beauty and MovieLens-1M using the same dataset-specific hyperparameters and paired seeds (42, 43, 44). LastFM is documented and audited, but is not included in the CP2 paired training comparison.
 
-| Metrik | BSARec paper | BSARec kami | Gap | SASRec paper | SASRec kami | Gap |
-| --- | --- | --- | --- | --- | --- | --- |
-| HR@5 | 0,0736 | 0,0703 | -4,5% | 0,0340 | 0,0341 | +0,2% |
-| NDCG@5 | 0,0523 | 0,0501 | -4,1% | 0,0221 | 0,0218 | -1,2% |
-| HR@10 | 0,1008 | 0,0980 | -2,8% | 0,0531 | 0,0533 | +0,4% |
-| NDCG@10 | 0,0611 | 0,0591 | -3,3% | 0,0283 | 0,0280 | -1,1% |
-| HR@20 | 0,1373 | 0,1334 | -2,8% | 0,0823 | 0,0823 | 0,0% |
-| NDCG@20 | 0,0703 | 0,0680 | -3,3% | 0,0356 | 0,0353 | -0,8% |
+## Main findings
 
-- Evaluasi checkpoint resmi penulis (`BSARec_Beauty_best`) menghasilkan angka yang sama dengan Table 2 paper. Ini mendukung kesesuaian perhitungan metrik pada checkpoint tersebut, tetapi sendiri tidak membuktikan seluruh pipeline reproduksi.
-- BSARec hasil latihan kami konsisten 2,8% sampai 4,5% di bawah paper; penyebabnya **belum teruji** (dugaan: perbedaan versi library dan GPU, lihat bagian lingkungan).
-- SASRec sangat sensitif terhadap seed (std HR@5 0,0035); rata-rata tiga seed hampir sama dengan paper.
-- BSARec mengungguli SASRec 62% sampai 130% di reproduksi kami (paper: 67% sampai 137%).
+### CP2 paired results
 
-### Ablasi alpha dan c (satu seed, 42)
+| Dataset | Metric | Vanilla mean | Time-aware mean | Relative change | Paired seeds higher |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Beauty | HR@10 | 0.09797 | 0.09830 | +0.34% | 1/3 |
+| Beauty | NDCG@10 | 0.05903 | 0.05937 | +0.56% | 2/3 |
+| ML-1M | HR@10 | 0.26507 | 0.27710 | +4.54% | 3/3 |
+| ML-1M | NDCG@10 | 0.14700 | 0.15410 | +4.83% | 3/3 |
 
-![Ablasi](figures/ablasi_beauty.png)
+Across the six reported metrics, Beauty has very small mean gains and mixed paired-seed directions; the evidence does not show a clear practical improvement. ML-1M improves on all six mean metrics, with 17 of 18 metric-by-seed deltas positive. This is preliminary evidence that the effect depends on the dataset. There are only three seeds, metrics are rounded in the source logs, and no statistical significance test is reported; do not describe these results as statistically significant or universally generalizable.
 
-Alpha besar lebih baik dan mendatar di 0.5 sampai 0.9; c terbaik di 5 sampai 7. Dengan satu seed per titik, hanya alpha = 0.1 dan c = 1 yang bedanya cukup jelas dari noise antar seed (std HR@20 sekitar 0,0013). Tabel lengkap: `results/ablation_alpha_beauty.csv` dan `results/ablation_c_beauty.csv`.
+- Per-seed table: [`results/CP2/paired_by_seed.csv`](results/CP2/paired_by_seed.csv)
+- Aggregate table: [`results/CP2/summary.csv`](results/CP2/summary.csv)
+- Executed paired notebook: [`notebooks/CP2/CP2_Paired_BSARec_Vanilla_vs_Time_Beauty_ML1M_executed.ipynb`](notebooks/CP2/CP2_Paired_BSARec_Vanilla_vs_Time_Beauty_ML1M_executed.ipynb)
+- Time-bucket audit: [`reports/CP2/Beauty_ML1M_time_bucket_audit.json`](reports/CP2/Beauty_ML1M_time_bucket_audit.json)
 
-## LastFM (3 seed)
+The CP2 time feature uses eight categorical IDs: first event, zero gap, then positive gaps up to 1 hour, 1 day, 1 week, 30 days, 365 days, and over 365 days. No numeric normalization is applied to bucket IDs. Only history-position buckets are passed to the model; the target-position bucket is excluded. The configuration is in [`configs/CP2/time_bucket_config.json`](configs/CP2/time_bucket_config.json).
 
-Notebook utama menggunakan konfigurasi 4 worker. Output preprocessing yang tersimpan mencatat kecocokan urutan dan pemetaan referensi untuk 1.090/1.090 pengguna, serta lolosnya pemeriksaan 5-core, artis unik per pengguna, timestamp monoton, gap, dan serialisasi. Audit mencatat commit upstream BSARec `c80bdc0f1a889b78fe9a27e2058389cc84caea84`. Output preview baris mentah sengaja dihapus dari salinan notebook publik; dataset dan file checkpoint tidak ikut di-commit.
+### CP1 reproduction
 
-Rata-rata test 3 seed dibandingkan dengan Table 2 paper:
+CP1 covers BSARec and SASRec runs on Beauty, LastFM, and ML-1M. Beauty and LastFM have three-seed result tables; the archived ML-1M baseline has one seed and should be treated as descriptive. The Beauty ablations use one seed per setting. Full tables and caveats are documented in the result files and the CP1 report.
 
-| Metrik | BSARec paper | BSARec 4 worker | Gap | SASRec paper | SASRec 4 worker | Gap |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| HR@5 | 0,0523 | 0,0504 | -3,57% | 0,0413 | 0,0489 | +18,48% |
-| NDCG@5 | 0,0344 | 0,0347 | +0,97% | 0,0284 | 0,0351 | +23,47% |
-| HR@10 | 0,0807 | 0,0734 | -9,05% | 0,0633 | 0,0654 | +3,37% |
-| NDCG@10 | 0,0435 | 0,0422 | -3,07% | 0,0355 | 0,0404 | +13,80% |
-| HR@20 | 0,1174 | 0,1110 | -5,42% | 0,0927 | 0,0936 | +0,97% |
-| NDCG@20 | 0,0526 | 0,0517 | -1,77% | 0,0429 | 0,0475 | +10,72% |
+- CP1 report: [`reports/CP1/Laporan_Progres_CP1_BSARec.docx`](reports/CP1/Laporan_Progres_CP1_BSARec.docx)
+- CP1 presentation: [`presentations/CP1/BSARec_CP1_3Datasets.pptx`](presentations/CP1/BSARec_CP1_3Datasets.pptx)
+- Dataset-specific notebooks: [`notebooks/CP1/`](notebooks/CP1/)
+- CP1 result tables: [`results/CP1/`](results/CP1/)
 
-BSARec menang pada HR@10, HR@20, dan NDCG@20 di ketiga seed; hasil HR@5 dekat dan NDCG@5 bervariasi antar-seed. File [delta per seed](results/lastfm_paired_seed_deltas.csv) memberi hitungan lengkap.
+The paper's time-aware sequential recommendation literature predates this project (for example, TiSASRec). Therefore CP2 is framed as an empirical BSARec extension/evaluation, not as the first method to use time intervals.
 
-Ada juga hasil SASRec 2-worker dari notebook W&B tambahan. Rata-ratanya berbeda dari 4-worker pada semua enam metrik, tetapi ini **bukan uji kausal jumlah worker**: notebook dan patch berbeda, dan belum ada kontrol ulang seed 42 pada 2 worker. Angka tersebut hanya perbandingan deskriptif; rinciannya ada di [CSV sensitivitas worker](results/sasrec_lastfm_worker_sensitivity.csv).
+## Dataset and preprocessing notes
 
-Timestamp LastFM di sini berasal dari event tag, bukan riwayat scrobble/dengarkan musik. Notebook mencatat 44.273 gap tidak positif; karena itu urutan item dengan timestamp yang sama mengikuti urutan baris sumber. Dataset ini perlu diperlakukan hati-hati untuk eksperimen berbasis waktu.
+- **Beauty:** Amazon review interactions with event timestamps, transformed into the CP1 item/time sequence format and audited for row alignment before CP2 bucket generation.
+- **MovieLens-1M:** ratings ordered by their source timestamps; CP1 item/time sequences were checked for matching row order and counts before CP2 bucket generation.
+- **LastFM:** the available HetRec timestamp field describes artist-tag events, not listening/scrobble events. Audit files also caution that structural alignment does not prove every per-event timestamp is semantically correct. LastFM was therefore kept out of the CP2 paired training scope while its temporal semantics and alignment remain a separate validation concern. This is a scope decision, not a claim that the dataset is invalid.
 
-## MovieLens-1M (1 seed)
+Raw and processed datasets are not committed because of licensing, size, and redistribution constraints. See [`data/README.md`](data/README.md) for the local data layout and setup expectations. CP2 preprocessing reports and LastFM audits are in [`reports/CP2/`](reports/CP2/); Colab notebooks are in [`notebooks/CP2/`](notebooks/CP2/).
 
-Notebook ML-1M yang sudah ada berisi hasil seed 42 untuk kedua model. Ringkasan CSV tersedia untuk [BSARec](results/bsarec_ml_1m_1seed.csv) dan [SASRec](results/sasrec_ml_1m_1seed.csv). Hasil ini masih deskriptif karena hanya satu seed; konfigurasi worker juga berbeda (BSARec 4 worker, SASRec 2 worker), sehingga perbandingan langsung perlu caveat.
+## Experimental controls and limitations
 
-## Presentasi Checkpoint 1
+- Within each dataset, vanilla and time-aware runs use matched seeds and the same model hyperparameters. Beauty: learning rate 0.0005, alpha 0.7, c 5, 1 attention head, 4 data-loader workers. ML-1M: learning rate 0.001, alpha 0.9, c 3, 2 heads, 2 workers. Confirmed commands are stored in the paired notebook.
+- The worker count is a data-loading/runtime setting, not a model contribution. It is held fixed within each dataset's vanilla/time pair; Beauty and ML-1M use different counts, so cross-dataset score comparisons are descriptive. The repository records the run settings but not a controlled reason for the cross-dataset difference; do not present it as a worker ablation or an exact paper configuration.
+- The CP2 paired CSV is assembled from preserved notebook outputs: vanilla and Beauty values are stored in the analysis cell; ML-1M time-aware values are read from saved run logs. The resulting values match the displayed test outputs. Keep the executed notebook and logs with any future exports.
+- The paired results use three seeds only. There is no formal significance test, no bucket-boundary sensitivity analysis, and no evidence that gains generalize to other recommendation models or datasets.
+- CP1 reproductions differ from the paper in software/runtime environments and some run configurations. The repository documents those differences instead of attributing unexplained gaps to one cause.
 
-Deck yang disiapkan dari template tersedia di [presentations/CP1/BSARec_CP1_3Datasets.pptx](presentations/CP1/BSARec_CP1_3Datasets.pptx). Notebook per dataset:
+## Repository layout
 
-- Beauty: [BSARec_Beauty.ipynb](notebooks/BSARec_Beauty.ipynb)
-- LastFM, hasil utama: [BSARec_LastFM.ipynb](notebooks/BSARec_LastFM.ipynb)
-- LastFM, eksperimen tambahan: [BSARec_LastFM_EksperimenTambahan.ipynb](notebooks/BSARec_LastFM_EksperimenTambahan.ipynb)
-- MovieLens-1M: [BSARec_dan_SASRec_ML_1M.ipynb](notebooks/BSARec_dan_SASRec_ML_1M.ipynb)
-
-## Struktur repositori
-
-| Folder | Isi |
+| Path | Contents |
 | --- | --- |
-| `scripts/` | `compare_with_paper.py` (tabel gap vs paper), `plot_ablation.py` (tabel dan grafik ablasi), `run_baselines.sh`, `run_ablation.sh` |
-| `results/` | CSV hasil per seed, mean, std, dan gap terhadap paper; CSV ablasi dan sensitivitas worker |
-| `figures/` | Grafik ablasi |
-| `logs/` | Log training (`.log`) tiap run |
-| `patches/` | Patch logging W&B untuk `main.py` upstream |
-| `notebooks/` | Notebook Colab untuk Beauty, LastFM (audit ketat dan eksperimen W&B), dan ML-1M |
-| `presentations/CP1/` | Deck presentasi Checkpoint 1 |
+| `notebooks/CP1/` | CP1 Beauty, LastFM, and ML-1M notebooks |
+| `notebooks/CP2/` | CP2 paired runs, executed outputs, and LastFM audit notebooks |
+| `scripts/CP1/` | CP1 comparison, plotting, and run scripts |
+| `scripts/CP2/` | Time-bucket preprocessing and embedding-export helpers |
+| `results/CP1/`, `results/CP2/` | Tabular experiment outputs, separated by checkpoint |
+| `logs/CP1/`, `logs/CP2/` | Available logs; CP2 seed-42 logs are labeled as pilot logs |
+| `reports/CP1/`, `reports/CP2/` | Progress report and audit/report artifacts |
+| `figures/CP1/` | CP1 ablation figure |
+| `presentations/CP1/` | CP1 deck |
+| `configs/CP2/` | Time-bucket configuration |
 
-## Cara mereproduksi
+## Reproduce CP2 preprocessing
 
-1. Dari root repo ini, ambil kode upstream (jangan di-commit; sudah masuk .gitignore) dan siapkan environment (lihat README upstream; kami memakai pip di Colab, bukan `bsarec_env.yaml`):
-   ```
-   git clone https://github.com/yehjin-shin/BSARec
-   cd BSARec/src
-   ```
-2. (Opsional) terapkan patch W&B: `git apply ../../patches/wandb_logging.patch`.
-3. Jalankan `bash ../../scripts/run_baselines.sh` (BSARec dan SASRec, 3 seed) dan `bash ../../scripts/run_ablation.sh` (sapuan alpha dan c). Satu run BSARec di Beauty memakan sekitar 15 sampai 25 menit di Tesla T4.
-4. Dari root repo ini: `python scripts/compare_with_paper.py` dan `python scripts/plot_ablation.py` (skrip tersebut khusus Beauty). Notebook LastFM dan ML-1M menyimpan konfigurasi dan output eksperimennya masing-masing. Sel training menjalankan ulang eksperimen; jangan gunakan “Run all” hanya untuk membaca hasil tersimpan.
+The default local input path is `../anca/txt` relative to this repository, matching Anca's workspace directory after its rename. Alternatively pass explicit paths:
 
-## Lingkungan
+```bash
+python scripts/CP2/prepare_cp2_time_buckets.py --data-dir PATH_TO_CP1_ITEM_TIME_FILES --output-dir PATH_TO_LOCAL_OUTPUT
+```
 
-| Komponen | Reproduksi kami | Paper |
-| --- | --- | --- |
-| GPU | Tesla T4 (Google Colab) | NVIDIA RTX 3090 |
-| Python | 3.13.16 | 3.9.7 |
-| PyTorch | 2.11.0 (CUDA 13.0) | 1.8.1 (CUDA 11.1) |
-| NumPy / SciPy | 2.1.3 / 1.16.3 | 1.24.3 / 1.11.1 |
+The script expects paired `<dataset>.txt` and `<dataset>_time.txt` files for each requested dataset. It validates sequence alignment, writes bucket files and a JSON manifest, and prints SHA-256 digests. Keep those generated data files outside Git.
 
-Sebagian eksperimen LastFM dicatat di [Weights & Biases project `bsarec-repro`](https://wandb.ai/rusdiasputre-brawijaya-university/bsarec-repro). Notebook utama 4-worker menjadi sumber utama tabel LastFM; notebook eksperimen tambahan 2-worker mencatat hasil W&B.
+To continue a Colab run, use the runnable paired notebook in `notebooks/CP2/`; the executed copy is for inspection and reporting. Avoid rerunning long training cells just to view stored output.
 
-## Data dan lisensi
+## Upstream and data sources
 
-Repositori upstream menyertakan data di `src/data`. Kami **tidak** menyalinnya ke sini. Beauty berasal dari Amazon Reviews (McAuley dkk., 2015) melalui hasil pra-pemrosesan repositori FMLP-Rec; ML-1M dari GroupLens; LastFM dari HetRec 2011. Berkas dataset tidak disertakan; pengguna perlu memperoleh dan memeriksa ketentuan penggunaan dari sumber dataset masing-masing. Repositori upstream tidak disalin ke repo ini; clone dari sumber resmi jika ingin menjalankan notebook.
+- BSARec upstream: <https://github.com/yehjin-shin/BSARec>
+- Audited upstream commit used by the CP2 runtime: `c80bdc0f1a889b78fe9a27e2058389cc84caea84`
+- BSARec paper: Shin et al., AAAI 2024, <https://arxiv.org/abs/2312.10325>
+- Data sources: Amazon Reviews (Beauty), GroupLens MovieLens-1M, and HetRec 2011 Last.fm. Obtain data directly from their official/distribution sources and follow their terms.
 
-## Keterbatasan
-
-Ablasi hanya satu seed per titik; Beauty dan LastFM memakai tiga seed, sedangkan ML-1M baru satu seed. Penyebab selisih dengan paper belum diuji; baseline kuat (DuoRec, FEARec) tidak direproduksi; konfigurasi worker ML-1M tidak seragam, dan perbandingan SASRec LastFM 2-worker/4-worker belum mengisolasi worker sebagai penyebab. Nondeterminisme GPU dapat mengubah digit terakhir (contoh Beauty: NDCG@20 seed 42 bernilai 0,0683 dan 0,0682 pada dua run).
-
-## Rujukan
-
-Shin, Y., Choi, J., Wi, H., dan Park, N. (2024). An Attentive Inductive Bias for Sequential Recommendation beyond the Self-Attention. AAAI 2024.
+The repository intentionally excludes raw data, processed sequence files, checkpoints, runtime outputs, credentials, and temporary presentation build files.

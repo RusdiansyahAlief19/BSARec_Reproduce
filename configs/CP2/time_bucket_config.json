@@ -1,0 +1,44 @@
+{
+  "bucket_ids": {
+    "0": "first event / no prior history",
+    "1": "zero gap / equal adjacent timestamp",
+    "2": "0 < gap <= 1 hour",
+    "3": "1 hour < gap <= 1 day",
+    "4": "1 day < gap <= 1 week",
+    "5": "1 week < gap <= 30 days",
+    "6": "30 days < gap <= 365 days",
+    "7": "gap > 365 days"
+  },
+  "units": "seconds",
+  "normalization": "none; categorical embedding IDs",
+  "semantics": "HetRec artist-tag event time, not listening/scrobble time",
+  "target_leakage_rule": "for target at position t, pass only item/time positions before t",
+  "counts": {
+    "users": 1090,
+    "artists": 3646,
+    "interactions": 52551,
+    "bucket_counts_all_positions": {
+      "0": 1090,
+      "1": 44640,
+      "2": 222,
+      "3": 2,
+      "4": 13,
+      "5": 1723,
+      "6": 4650,
+      "7": 211
+    },
+    "bucket_counts_adjacent_gaps": {
+      "1": 44640,
+      "2": 222,
+      "3": 2,
+      "4": 13,
+      "5": 1723,
+      "6": 4650,
+      "7": 211
+    }
+  },
+  "input_sha256": {
+    "items": "0879c771263e54553db73c89401307bf0f60987c2c35b829f6375661192dda0f",
+    "gaps": "a44dbc1027fd3c7f876aaa8d627e720b309f4a7aea7df5d820bfc2e9cd51cba8"
+  }
+}

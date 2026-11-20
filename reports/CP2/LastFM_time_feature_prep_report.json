@@ -1,0 +1,52 @@
+{
+  "users": 1090,
+  "artists": 3646,
+  "interactions": 52551,
+  "adjacent_gap_count": 51461,
+  "zero_gap_count": 44640,
+  "positive_gap_count": 6821,
+  "gaps_over_10_years": [
+    [
+      769,
+      1,
+      1698793200,
+      19661.96
+    ],
+    [
+      185,
+      1,
+      1675206000,
+      19388.96
+    ],
+    [
+      546,
+      1,
+      831168000,
+      9620.0
+    ]
+  ],
+  "bucket_definition": "0 for zero; 1 for 0<gap<=1h; log2-hour buckets above 1h",
+  "bucket_counts": {
+    "0": 45730,
+    "1": 222,
+    "2": 1,
+    "4": 1,
+    "6": 8,
+    "8": 5,
+    "11": 4108,
+    "12": 921,
+    "13": 887,
+    "14": 434,
+    "15": 175,
+    "16": 54,
+    "17": 2,
+    "19": 1,
+    "20": 2
+  },
+  "input_target_rule": "target timestamp/bucket excluded; only history positions supplied",
+  "source_semantics": "HetRec LastFM tag time, not listening/scrobble time",
+  "source_hashes": {
+    "items": "0879c771263e54553db73c89401307bf0f60987c2c35b829f6375661192dda0f",
+    "gaps": "a44dbc1027fd3c7f876aaa8d627e720b309f4a7aea7df5d820bfc2e9cd51cba8"
+  }
+}

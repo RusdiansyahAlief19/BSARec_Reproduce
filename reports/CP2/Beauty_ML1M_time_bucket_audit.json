@@ -1,0 +1,88 @@
+{
+  "schema": "CP2 explicit time buckets v1",
+  "bucket_ids": {
+    "0": "first event / no prior history",
+    "1": "zero gap / equal adjacent timestamp",
+    "2": "0 < gap <= 1 hour",
+    "3": "1 hour < gap <= 1 day",
+    "4": "1 day < gap <= 1 week",
+    "5": "1 week < gap <= 30 days",
+    "6": "30 days < gap <= 365 days",
+    "7": "gap > 365 days"
+  },
+  "units": "seconds",
+  "normalization": "none; categorical embedding IDs",
+  "datasets": [
+    {
+      "dataset": "Beauty",
+      "users": 22363,
+      "interactions": 198502,
+      "bucket_ids": {
+        "0": "first event / no prior history",
+        "1": "zero gap / equal adjacent timestamp",
+        "2": "0 < gap <= 1 hour",
+        "3": "1 hour < gap <= 1 day",
+        "4": "1 day < gap <= 1 week",
+        "5": "1 week < gap <= 30 days",
+        "6": "30 days < gap <= 365 days",
+        "7": "gap > 365 days"
+      },
+      "bucket_counts_all_positions": {
+        "0": 22363,
+        "1": 77402,
+        "3": 4750,
+        "4": 13273,
+        "5": 22058,
+        "6": 50421,
+        "7": 8235
+      },
+      "units": "seconds",
+      "normalization": "none; categorical embedding IDs",
+      "time_file_first_field": "ignored metadata; CP1 user ID is copied from item file",
+      "alignment": "row order and event counts validated; raw timestamp gaps independently audited",
+      "target_leakage_rule": "only input-history buckets are supplied; target-position bucket is excluded",
+      "source_sha256": {
+        "Beauty.txt": "f85a84ab47d70e82bf0e7301804270af10fb51e127ab8f0885697d593f6f6d43",
+        "Beauty_time.txt": "6bd056c8618bef9facacdb99f84d173591c5aaede05416376d2aff476e1a3c21"
+      },
+      "output_file": "Beauty_cp2_time_buckets.txt",
+      "output_sha256": "384870d95ef5892711e51100d8aca914a32b2b0a36e2545503841525f8f8255c"
+    },
+    {
+      "dataset": "ML-1M",
+      "users": 6040,
+      "interactions": 999611,
+      "bucket_ids": {
+        "0": "first event / no prior history",
+        "1": "zero gap / equal adjacent timestamp",
+        "2": "0 < gap <= 1 hour",
+        "3": "1 hour < gap <= 1 day",
+        "4": "1 day < gap <= 1 week",
+        "5": "1 week < gap <= 30 days",
+        "6": "30 days < gap <= 365 days",
+        "7": "gap > 365 days"
+      },
+      "bucket_counts_all_positions": {
+        "0": 6040,
+        "1": 528654,
+        "2": 446570,
+        "3": 3694,
+        "4": 5776,
+        "5": 4856,
+        "6": 3802,
+        "7": 219
+      },
+      "units": "seconds",
+      "normalization": "none; categorical embedding IDs",
+      "time_file_first_field": "ignored metadata; CP1 user ID is copied from item file",
+      "alignment": "row order and event counts validated; raw timestamp gaps independently audited",
+      "target_leakage_rule": "only input-history buckets are supplied; target-position bucket is excluded",
+      "source_sha256": {
+        "ML-1M.txt": "33b3a83512de756376c640dcad7dd92deb47243db5b1b5bc7518625b27bc8597",
+        "ML-1M_time.txt": "a0be208ac645e5d0dfbb4764b0552b33dd4bd03606582fb02406a2cd64cd6b83"
+      },
+      "output_file": "ML-1M_cp2_time_buckets.txt",
+      "output_sha256": "c893ae0f00e96e1c26dd94e13821dbcdab82eeb8333defc26b79a0169d529b2a"
+    }
+  ]
+}

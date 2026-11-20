@@ -1,0 +1,21 @@
+{
+  "users": 1090,
+  "artists": 3646,
+  "interactions": 52551,
+  "avg_sequence_length": 48.21192660550459,
+  "users_with_repeated_items": 0,
+  "repeated_item_positions": 0,
+  "negative_time_values": 0,
+  "large_values_if_seconds": 3,
+  "cp1_expected": {
+    "users": 1090,
+    "artists": 3646,
+    "interactions": 52551
+  },
+  "counts_match_cp1": true,
+  "sha256": {
+    "LastFM.txt": "0879c771263e54553db73c89401307bf0f60987c2c35b829f6375661192dda0f",
+    "LastFM_time.txt": "a44dbc1027fd3c7f876aaa8d627e720b309f4a7aea7df5d820bfc2e9cd51cba8"
+  },
+  "caveat": "Structural alignment does not prove per-event timestamp correctness. HetRec timestamps are tagging events, not listening/scrobble events."
+}

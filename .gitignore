@@ -1,6 +1,9 @@
 # Data berlisensi (Amazon, ML-1M, LastFM): JANGAN di-commit. Unduh sendiri lewat repo upstream.
 src/data/
-data/
+/data/*
+!/data/README.md
+**/__pycache__/
+*.py[cod]
 *.npy
 notebooks/raw/
 notebooks/processed/

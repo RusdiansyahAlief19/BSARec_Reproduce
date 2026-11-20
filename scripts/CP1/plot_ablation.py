@@ -1,5 +1,5 @@
 # Tabel dan grafik ablasi alpha dan c di Beauty (seed 42). Angka diketik manual.
-# Jalankan dari root repo: python scripts/plot_ablation.py  (menyimpan figures/ablasi_beauty.png)
+# Jalankan dari root repo: python scripts/CP1/plot_ablation.py  (menyimpan figures/CP1/ablasi_beauty.png)
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -52,5 +52,8 @@ panel(axs[0], ta, "alpha", "Sensitivitas alpha, Beauty (c=5)")
 panel(axs[1], tc, "c", "Sensitivitas c, Beauty (alpha=0.7)")
 fig.suptitle("Ablasi BSARec di Beauty (seed 42)")
 plt.tight_layout()
-import os; os.makedirs("figures", exist_ok=True); plt.savefig("figures/ablasi_beauty.png", dpi=150)
+from pathlib import Path
+output_path = Path(__file__).resolve().parents[2] / "figures" / "CP1" / "ablasi_beauty.png"
+output_path.parent.mkdir(parents=True, exist_ok=True)
+plt.savefig(output_path, dpi=150)
 plt.close()
